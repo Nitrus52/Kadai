@@ -141,7 +141,13 @@ class App:
 		self.rule_putting_valid_pos = []
 		self.rule_putting_idx = 0
 
-		self.set_initial_rule(3)
+		while True:
+			self.set_initial_rule(3)
+			if is_valid_init():
+				break
+			else:
+				self.rule_list = []
+				continue
 
 		pyxel.run(self.update, self.draw)
 
@@ -267,15 +273,50 @@ class App:
 			self.phase = "SOLVE"
 
 
+	def is_valid_init(self):
+		is_ok = False
+		movement_list = []
+		movement_list.append(["UP"])
+		movement_list.append(["RIGHT"])
+		movement_list.append(["DOWN"])
+		movement_list.append(["LEFT"])
+
+		def is_valid_movement(movement):
+			visited = [[0 for j in range(PUZZLE_WIDTH)] for i in range(PUZZLE_HEIGHT)]
+			cur_h, cur_w = 3, 0
+			visited[cur_h][cur_w] = 1
+			for direction in movement:
+				if direction == "UP":
+					cur_h -= 1
+				elif direction == "RIGHT":
+					cur_w += 1
+				elif direction == "DOWN":
+					cur_h += 1
+				elif direction == "LEFT":
+					cur_w -= 1
+				
+				if cur_h < 0 or cur_w < 0 or cur_h >= PUZZLE_HEIGHT or cur_w >= PUZZLE_WIDTH:
+					return False
+				
+				if visited[cur_h][cur_w] == 1:
+					return False
+
+				visited[cur_h][cur_w] = 1
+
+			return True
+
+		while movement_list.len() > 0:
+			movement = movement_list.pop()
+			if is_valid_movement(movement):
+				rule_state_list = judge()
+				if rule_state_list[0] and rule_state_list[1] and rule_state_list[2]:
+					is_ok = True
+					break
+		
+		return is_ok
+
+
 	def set_initial_rule(self, n):
-		'''
-		self.rule_list.append(((1, 1), "RightArrow2"))
-		self.rule_list.append(((3, 5), "Side2"))
-		self.rule_list.append(((6, 3), "Star"))
-		self.point_rule_list.append(0)
-		self.point_rule_list.append(0)
-		self.point_rule_list.append(0)
-		'''
 		used_rule = []
 		rule_used_pos = []
 		cnt = 1
