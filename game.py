@@ -143,7 +143,7 @@ class App:
 
 		while True:
 			self.set_initial_rule(3)
-			if is_valid_init():
+			if self.is_valid_init():
 				break
 			else:
 				self.rule_list = []
@@ -294,10 +294,10 @@ class App:
 					cur_h += 1
 				elif direction == "LEFT":
 					cur_w -= 1
-				
+
 				if cur_h < 0 or cur_w < 0 or cur_h >= PUZZLE_HEIGHT or cur_w >= PUZZLE_WIDTH:
 					return False
-				
+
 				if visited[cur_h][cur_w] == 1:
 					return False
 
@@ -305,14 +305,20 @@ class App:
 
 			return True
 
-		while movement_list.len() > 0:
+		while len(movement_list) > 0:
 			movement = movement_list.pop()
 			if is_valid_movement(movement):
-				rule_state_list = judge()
+				self.movement_log = movement
+				rule_state_list = self.judge()
+				self.movement_log = []
+				movement_list.append(movement+["UP"])
+				movement_list.append(movement+["RIGHT"])
+				movement_list.append(movement+["DOWN"])
+				movement_list.append(movement+["LEFT"])
 				if rule_state_list[0] and rule_state_list[1] and rule_state_list[2]:
 					is_ok = True
 					break
-		
+
 		return is_ok
 
 
